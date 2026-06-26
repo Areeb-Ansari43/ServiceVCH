@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Log Service - VCH Fleet Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body onload="checkAuth()">
+
+<div class="app-container">
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%23f7791f' width='100' height='100'/%3E%3Ctext x='50' y='60' font-size='60' font-weight='bold' fill='white' text-anchor='middle'%3EVH%3C/text%3E%3C/svg%3E" alt="VCH">
+      <div class="sidebar-brand-text">
+        <strong>VCH Fleet</strong>
+        <small>Tracker</small>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-item" id="nav-dashboard" onclick="navigate('dashboard.html')">
+        <i class="fa-solid fa-chart-line"></i> Dashboard
+      </div>
+      <div class="nav-item" id="nav-vehicles" onclick="navigate('vehicles.html')">
+        <i class="fa-solid fa-car"></i> Vehicles
+      </div>
+      <div class="nav-item active" id="nav-services" onclick="navigate('services.html')">
+        <i class="fa-solid fa-wrench"></i> Service History
+      </div>
+      <div class="nav-item" id="nav-mileage" onclick="navigate('mileage.html')">
+        <i class="fa-solid fa-gauge"></i> Driver Mileage
+      </div>
+      <div class="nav-divider"></div>
+      <div class="nav-item add-vehicle" id="nav-add-vehicle" onclick="navigate('add-vehicle.html')">
+        <i class="fa-solid fa-plus"></i> Add Vehicle
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sign-out-btn" onclick="signOut()">
+        <i class="fa-solid fa-sign-out-alt"></i> Sign Out
+      </div>
+    </div>
+  </aside>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="main-content">
+    <button class="hamburger" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <div class="page">
+      <div class="back-btn" onclick="navigate('services.html')"><i class="fa-solid fa-chevron-left"></i> Back to services</div>
+      <div class="page-header">
+        <h1>Log Service</h1>
+        <p>Record a new service or maintenance event</p>
+      </div>
+
+      <div class="form-card">
+        <div class="form-section-title"><i class="fa-solid fa-wrench"></i> Service Details</div>
+        
+        <div class="form-row">
+          <div class="form-field">
+            <label>Vehicle *</label>
+            <select id="log-vehicle">
+              <option value="">Select vehicle...</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Service Type *</label>
+            <select id="log-type">
+              <option value="oil">Oil Change</option>
+              <option value="full">Full Service</option>
+              <option value="mot">MOT</option>
+              <option value="battery">Battery Check</option>
+              <option value="brake">Brake Service</option>
+              <option value="diag">Diagnostic</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label>Date *</label>
+            <input type="date" id="log-date">
+          </div>
+          <div class="form-field">
+            <label>Cost (£)</label>
+            <input type="number" id="log-cost" placeholder="0.00" min="0" step="0.01">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label>Garage / Location</label>
+            <input type="text" id="log-garage" placeholder="e.g. Kwik Fit Feltham">
+          </div>
+          <div class="form-field">
+            <label>Mileage at Service</label>
+            <input type="number" id="log-mileage" placeholder="e.g. 45000">
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label>Status</label>
+          <select id="log-status">
+            <option value="completed">Completed</option>
+            <option value="in-progress">In Progress</option>
+            <option value="scheduled">Scheduled</option>
+          </select>
+        </div>
+
+        <div class="form-field">
+          <label>Notes</label>
+          <textarea id="log-notes" placeholder="Describe the work done..."></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn btn-primary" onclick="logService()"><i class="fa-solid fa-floppy-disk"></i> Save Record</button>
+          <button class="btn btn-ghost" onclick="navigate('services.html')">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ===== TOAST ===== -->
+<div class="toast" id="toast">
+  <i class="fa-solid fa-circle-check toast-icon"></i>
+  <span id="toast-text">Action completed</span>
+</div>
+
+<script src="assets/app.js"></script>
+<script>
+// Populate vehicle dropdown
+const vehicleSelect = document.getElementById('log-vehicle');
+Object.values(VEHICLES).forEach(v => {
+  const option = document.createElement('option');
+  option.value = v.id;
+  option.textContent = v.reg + ' — ' + v.name;
+  vehicleSelect.appendChild(option);
+});
+
+// Set today's date
+document.getElementById('log-date').valueAsDate = new Date();
+</script>
+</body>
+</html>

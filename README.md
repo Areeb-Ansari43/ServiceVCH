@@ -36,8 +36,8 @@ vch-fleet-tracker-github/
 1. **Clone or Download** this repository
 2. **Open** `index.html` in your web browser
 3. **Login** with credentials:
-   - Email: `
-   - Password: 
+   - Email: `AAnsari100@outlook.com`
+   - Password: `MFvpfkqH9kZckqj`
 
 ## 📋 Pages
 
