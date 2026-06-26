@@ -1,78 +1,16 @@
-# VCH Fleet Tracker
+# React + Vite
 
-A premium fleet management application for tracking vehicles, service history, and driver mileage.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## 📁 Folder Structure
+Currently, two official plugins are available:
 
-```
-vch-fleet-tracker-github/
-├── index.html                    (Login page)
-├── dashboard.html                (Fleet dashboard)
-├── vehicles.html                 (Vehicle management)
-├── vehicle-detail.html           (Vehicle details & service history)
-├── services.html                 (Service history)
-├── log-service.html              (Log service form)
-├── mileage.html                  (Driver mileage tracking)
-├── track-mileage.html            (Track mileage form)
-├── add-vehicle.html              (Add vehicle form)
-├── assets/
-│   ├── style.css                (All styling)
-│   └── app.js                   (All functionality)
-└── README.md
-```
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-## ✨ Features
+## React Compiler
 
-- **Vehicle Management** - Add, view, and manage fleet vehicles
-- **Service History** - Track all maintenance and service records
-- **Driver Mileage** - Monitor driver mileage with allowances and excess charges
-- **Data Persistence** - All data saved to localStorage
-- **Mobile Responsive** - Works perfectly on all devices
-- **Premium Design** - Dark theme with orange accents
-- **Icon-Based UI** - Font Awesome icons throughout
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-## 🚀 Getting Started
+## Expanding the ESLint configuration
 
-1. **Clone or Download** this repository
-2. **Open** `index.html` in your web browser
-3. **Login** with credentials:
-   - Email: `AAnsari100@outlook.com`
-   - Password: `MFvpfkqH9kZckqj`
-
-## 📋 Pages
-
-- **Dashboard** - Overview of fleet health and service status
-- **Vehicles** - Grid view of all vehicles with quick access
-- **Vehicle Details** - Comprehensive vehicle information and service history
-- **Service History** - All recorded services and maintenance
-- **Driver Mileage** - Track driver mileage with logs and allowances
-- **Add Vehicle** - Form to add new vehicles to fleet
-- **Log Service** - Record new service events
-- **Track Mileage** - Set up driver mileage tracking
-
-## 🔧 Technologies Used
-
-- HTML5
-- CSS3
-- JavaScript (Vanilla)
-- Font Awesome Icons
-- localStorage API
-
-## 💾 Data Storage
-
-All data is stored locally in your browser's localStorage. No server or database required.
-
-## 📱 Browser Support
-
-- Chrome (Latest)
-- Firefox (Latest)
-- Safari (Latest)
-- Edge (Latest)
-
-## 📝 License
-
-MIT License - Feel free to use and modify for your needs.
-
----
-
-**Built with ❤️ for VCH Fleet**
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
