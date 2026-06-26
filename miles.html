@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Driver Mileage | VCH Fleet Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .mileage-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 24px; width: 100%; }
+        .mileage-card { background: rgba(22,22,27,.8); border: 1px solid var(--line); border-radius: 20px; padding: 24px; transition: 0.3s; }
+        .mileage-card:hover { border-color: var(--orange); }
+        .driver-info { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+        .avatar { width: 48px; height: 48px; border-radius: 14px; background: rgba(247,121,31,.1); color: var(--orange); display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        .stats-box { background: rgba(255,255,255,.04); border-radius: 16px; padding: 16px; margin: 16px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .stat-item label { display: block; font-size: 10px; color: var(--muted); text-transform: uppercase; margin-bottom: 4px; }
+        .stat-item span { font-size: 16px; font-weight: 700; }
+        
+        .log-table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 13px; text-align: left; }
+        .log-table th { color: var(--muted); font-weight: 500; padding: 8px; border-bottom: 1px solid var(--line); }
+        .log-table td { padding: 8px; border-bottom: 1px solid rgba(255,255,255,.02); }
+        
+        .form-group { margin-bottom: 16px; text-align: left; }
+        .form-group label { display: block; font-size: 13px; margin-bottom: 8px; color: #ccc; }
+        .form-group input, .form-group select { width: 100%; background: rgba(255,255,255,.05); border: 1px solid var(--line); border-radius: 12px; padding: 12px; color: #fff; outline: none; }
+    </style>
+</head>
+<body>
+    <div class="hamburger" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></div>
+    <div class="sidebar-overlay" onclick="closeSidebar()"></div>
+    
+    <div class="app-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <i class="fa-solid fa-car-side" style="font-size: 24px; color: var(--orange);"></i>
+                <div class="sidebar-brand-text">
+                    <strong>VCH FLEET</strong>
+                    <small>TRACKER</small>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="vehicles.html" class="nav-item"><i class="fa-solid fa-car"></i> Vehicles</a>
+                <a href="service.html" class="nav-item"><i class="fa-solid fa-wrench"></i> Service History</a>
+                <a href="miles.html" class="nav-item active"><i class="fa-solid fa-gauge-high"></i> Driver Mileage</a>
+            </nav>
+            <div style="padding: 16px;">
+                <button class="nav-item" style="width: 100%; border: none; background: none; cursor: pointer;" onclick="signOut()">
+                    <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+                </button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div id="view-list" class="centered-content">
+                <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; flex-wrap: wrap; gap: 16px;">
+                    <div style="text-align: left;">
+                        <h1 style="font-size: 28px;">Driver Mileage</h1>
+                        <p style="color: var(--muted);">Track and monitor vehicle usage</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="showTrackForm()">
+                        <i class="fa-solid fa-plus"></i> Track Mileage
+                    </button>
+                </div>
+
+                <div id="mileage-container" class="mileage-grid">
+                    <!-- Mileage cards will be injected here -->
+                </div>
+            </div>
+
+            <!-- Track Form -->
+            <div id="view-form" class="centered-content" style="display: none;">
+                <div style="width: 100%; text-align: left; margin-bottom: 32px;">
+                    <button class="btn btn-ghost btn-sm" onclick="showList()"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                    <h1 style="font-size: 28px; margin-top: 16px;">New Tracking Record</h1>
+                </div>
+                <div class="card" style="width: 100%; max-width: 500px;">
+                    <div class="form-group">
+                        <label>Driver Name *</label>
+                        <input type="text" id="track-driver" placeholder="e.g. Areeb">
+                    </div>
+                    <div class="form-group">
+                        <label>Vehicle *</label>
+                        <select id="track-vehicle-select"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Start Mileage</label>
+                        <input type="number" id="track-start" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Monthly Allowance (mi)</label>
+                        <input type="number" id="track-allowance" value="5000">
+                    </div>
+                    <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
+                        <button class="btn btn-ghost" onclick="showList()">Cancel</button>
+                        <button class="btn btn-primary" onclick="saveTracking()">Start Tracking</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="log-modal" class="modal-overlay">
+        <div class="modal-card">
+            <h3 class="modal-title">Log Miles</h3>
+            <div class="form-group">
+                <label>Current Mileage Reading</label>
+                <input type="number" id="log-miles-input" placeholder="Enter reading">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-ghost" onclick="closeModal('log-modal')">Cancel</button>
+                <button class="btn btn-primary" onclick="executeLogMiles()">Update</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="history-modal" class="modal-overlay">
+        <div class="modal-card" style="max-width: 500px;">
+            <h3 class="modal-title">Mileage History</h3>
+            <div id="history-content" style="max-height: 300px; overflow-y: auto;"></div>
+            <div class="modal-actions" style="margin-top: 20px;">
+                <button class="btn btn-ghost" onclick="closeModal('history-modal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="delete-modal" class="modal-overlay">
+        <div class="modal-card">
+            <h3 class="modal-title">Delete Record?</h3>
+            <p id="delete-modal-text" class="modal-text"></p>
+            <div class="modal-actions">
+                <button class="btn btn-ghost" onclick="closeModal('delete-modal')">Cancel</button>
+                <button class="btn btn-danger" onclick="executeDelete()">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast">
+        <i class="toast-icon"></i>
+        <span id="toast-text"></span>
+    </div>
+
+    <script src="assets/js/utils.js"></script>
+    <script>
+        checkAuth();
+        let vehicles = DataStore.get('vehicles');
+        let mileage = DataStore.get('mileage');
+        let activeTrackingId = null;
+
+        function renderMileage() {
+            const container = document.getElementById('mileage-container');
+            container.innerHTML = '';
+            
+            mileage.forEach(m => {
+                const v = vehicles[m.vehicleId] || { name: 'Unknown', reg: '---' };
+                const driven = m.currentMiles - m.startMiles;
+                const card = document.createElement('div');
+                card.className = 'mileage-card';
+                card.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div class="driver-info">
+                            <div class="avatar"><i class="fa-solid fa-user"></i></div>
+                            <div style="text-align: left;">
+                                <h3 style="font-size: 18px;">${m.driver}</h3>
+                                <p style="color: var(--muted); font-size: 13px;">${v.name}</p>
+                            </div>
+                        </div>
+                        <button class="btn btn-danger btn-sm" onclick="handleDelete(${m.id}, '${m.driver}')"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                    <div style="text-align: left; margin-bottom: 16px;">
+                        <div class="reg-plate" style="font-size: 14px;">
+                            <div class="uk-side" style="padding: 2px 6px;"><img src="https://upload.wikimedia.org/wikipedia/commons/a/ae/Flag_of_the_United_Kingdom.svg" style="width:14px"></div>
+                            <div class="reg-text" style="padding: 2px 8px;">${v.reg}</div>
+                        </div>
+                    </div>
+                    <div class="stats-box">
+                        <div class="stat-item"><label>Start</label><span>${m.startMiles.toLocaleString()}</span></div>
+                        <div class="stat-item"><label>Current</label><span>${m.currentMiles.toLocaleString()}</span></div>
+                        <div class="stat-item"><label>Driven</label><span>${driven.toLocaleString()} mi</span></div>
+                        <div class="stat-item"><label>Allowance</label><span>${m.allowance.toLocaleString()}</span></div>
+                    </div>
+                    <div style="display: flex; gap: 8px; margin-top: 20px;">
+                        <button class="btn btn-primary btn-sm" style="flex: 1;" onclick="showLogModal(${m.id})"><i class="fa-solid fa-gauge"></i> Log Miles</button>
+                        <button class="btn btn-ghost btn-sm" style="flex: 1;" onclick="showHistory(${m.id})"><i class="fa-solid fa-list"></i> Log Files</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function showTrackForm() {
+            const select = document.getElementById('track-vehicle-select');
+            select.innerHTML = '<option value="">Select Vehicle...</option>';
+            Object.values(vehicles).forEach(v => {
+                const opt = document.createElement('option');
+                opt.value = v.id;
+                opt.textContent = `${v.reg} (${v.name})`;
+                select.appendChild(opt);
+            });
+            document.getElementById('view-list').style.display = 'none';
+            document.getElementById('view-form').style.display = 'flex';
+        }
+
+        function showList() {
+            document.getElementById('view-list').style.display = 'flex';
+            document.getElementById('view-form').style.display = 'none';
+            renderMileage();
+        }
+
+        function saveTracking() {
+            const driver = document.getElementById('track-driver').value.trim();
+            const vId = document.getElementById('track-vehicle-select').value;
+            const start = parseInt(document.getElementById('track-start').value || 0);
+            const allowance = parseInt(document.getElementById('track-allowance').value || 5000);
+            
+            if (!driver || !vId) return showToast('Please fill required fields', 'error');
+            
+            const newTrack = {
+                id: Date.now(),
+                driver,
+                vehicleId: vId,
+                startMiles: start,
+                currentMiles: start,
+                allowance,
+                startDate: new Date().toISOString().split('T')[0],
+                logs: [{date: new Date().toISOString().split('T')[0], miles: start}]
+            };
+            
+            mileage.push(newTrack);
+            DataStore.set('mileage', mileage);
+            showToast('Tracking started!');
+            showList();
+        }
+
+        function showLogModal(id) {
+            activeTrackingId = id;
+            document.getElementById('log-miles-input').value = '';
+            document.getElementById('log-modal').classList.add('open');
+        }
+
+        function executeLogMiles() {
+            const val = parseInt(document.getElementById('log-miles-input').value);
+            if (!val) return showToast('Enter mileage reading', 'error');
+            
+            const mIdx = mileage.findIndex(m => m.id === activeTrackingId);
+            if (val < mileage[mIdx].currentMiles) return showToast('New reading must be higher than current', 'error');
+            
+            mileage[mIdx].currentMiles = val;
+            mileage[mIdx].logs.push({
+                date: new Date().toISOString().split('T')[0],
+                miles: val
+            });
+            
+            // Also update vehicle mileage
+            const vId = mileage[mIdx].vehicleId;
+            if (vehicles[vId] && val > vehicles[vId].mileage) {
+                vehicles[vId].mileage = val;
+                DataStore.set('vehicles', vehicles);
+            }
+
+            DataStore.set('mileage', mileage);
+            showToast('Mileage updated');
+            closeModal('log-modal');
+            renderMileage();
+        }
+
+        function showHistory(id) {
+            const m = mileage.find(m => m.id === id);
+            const content = document.getElementById('history-content');
+            
+            let html = `
+                <table class="log-table">
+                    <thead>
+                        <tr><th>Date</th><th>Reading</th><th>Increase</th></tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            m.logs.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach((log, i, arr) => {
+                const prev = arr[i+1] ? log.miles - arr[i+1].miles : 0;
+                html += `<tr><td>${log.date}</td><td>${log.miles.toLocaleString()} mi</td><td>+${prev.toLocaleString()}</td></tr>`;
+            });
+            
+            html += '</tbody></table>';
+            content.innerHTML = html;
+            document.getElementById('history-modal').classList.add('open');
+        }
+
+        function handleDelete(id, name) {
+            confirmDelete(`Are you sure you want to delete tracking for ${name}?`, () => {
+                mileage = mileage.filter(m => m.id !== id);
+                DataStore.set('mileage', mileage);
+                showToast('Tracking deleted');
+                renderMileage();
+            });
+        }
+
+        renderMileage();
+    </script>
+</body>
+</html>
